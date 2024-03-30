@@ -1,74 +1,113 @@
-# DataCose Code Challenge: Weather App
+# Weather Dashboard Application Documentation
 
-## Overview
+The Weather Dashboard is a full-stack web application designed to provide users with current weather conditions and detailed forecasts for selected locations. It utilizes Nuxt.js for the frontend and FastAPI for the backend.
 
-Create a full-stack weather dashboard application utilizing Nuxt 3 for the frontend, Nuxt UI for user interface elements, and FastAPI for the backend. This application will showcase current weather conditions for user-selected locations and provide detailed forecasts.
+## Table of Contents
 
-### Project Setup
+1. [Project Structure](#project-structure)
+2. [Frontend](#frontend)
+   - [Layout](#layout)
+   - [Components](#components)
+   - [Pages](#pages)
+   - [API Integration](#api-integration)
+3. [Backend](#backend)
+   - [Endpoints](#endpoints)
+   - [Database Integration](#database-integration)
+   - [External API Integration](#external-api-integration)
+4. [Functionality](#functionality)
+5. [Usage](#usage)
+6. [Possible Enhancments](#possible-enhancements)
+7. [My Proposed Solution](#my-proposed-solution)
+8. [Challenges](#challenges)
+9. [Contributors](#contributors)
 
-You will be provided with a starter template that includes a configured Nuxt 3 frontend and a FastAPI backend. You are required to use this template. Feel free to install additional packages as needed to complete the challenge.
+## Project Structure
 
-### Design
+The Weather Dashboard project consists of both frontend and backend components:
 
-You must adhere to the design outlined in the screenshots within this document. It is essential to follow not just the layout but also the colors and other details as specified in the screenshots within this document. You can find the used icons in the `icons` folder.
+- **Frontend:** Developed using Nuxt3.js, a Vue.js framework for building web applications.
+- **Backend:** Built with FastAPI, a modern web framework for building APIs with Python.
 
-## Challenge Requirements
+## Frontend
 
-### Main Page
+The frontend of the Weather Dashboard is responsible for the user interface, including displaying weather information, managing user interactions, and making API requests to the backend.
 
-- **Weather Table:** The homepage should feature a table displaying weather information for each chosen location, including:
-  - An icon representing the weather condition, based on the WMO code.
-  - The location's name.
-  - The current temperature in degrees Celsius.
-  - The current rainfall in millimeters.
-  - A "Remove" button for each location. Clicking this button should trigger a confirmation popup before the location is deleted from the table.
+### Layout
 
-![table](/design/table.png)
+Layout contains the header of the web page, Logo is manually created since it was not provided.
 
-### Detailed Forecast
+### Components
 
-- **Forecast Sidebar:** Clicking on a row within the table should open a sidebar. This sidebar will provide a detailed temperature and rainfall forecast for the next 7 days for the selected location.
+The frontend consists of various components, including following custom ones:
 
-![table](/design/sidebar.png)
+- `Table`: Displays weather information in a tabular format using NuxtUI's UTable component
+- `Sidebar`: Provides a detailed forecast when a location row is clicked using NuxtUI's USlideover component.
+- `Modal`: Allows users to add new locations through a modal popup using NuxtUI's UModal component.
+- `Notificatoins`: Using NuxtUI's UNotification component we let users know when some action happens.
 
-### Location Management
+### Pages
 
-- **Add Location:** Incorporate a button above the table to add new locations. This will open a popup where users can search for and select a location to add to the table. Make sure the user can't submit the form if no location was selected.
+The main pages of the application include:
 
-![table](/design/modal.png)
-
-### Database Integration
-
-- Implement SQLAlchemy with a local Postgres database.
-- Design a `Location` model with attributes including id, name, latitude, and longitude.
-
-### API Endpoints
-
-- **Manage Locations:**
-
-  - `GET /locations`: Retrieve a list of all locations saved in the database, including their current weather conditions. This requires integrating with the [OpenMeteo API](https://open-meteo.com/) to fetch weather data based on latitude and longitude.
-  - `POST /locations`: Allow adding a new location by providing name, latitude, and longitude.
-  - `DELETE /locations/{id}`: Enable location deletion by ID.
-
-- **Weather Forecast:**
-  - `GET /forecast/{location_id}`: Provide a detailed 7-day weather forecast for a specified location. This endpoint will call the OpenMeteo API to fetch forecast data based on the location's latitude and longitude stored in the database.
+- `index.vue`: The main dashboard page featuring the weather table, sidebar and modals.
 
 ### API Integration
 
-- To fetch weather information, you are to use the [OpenMeteo API](https://open-meteo.com/). Given that this API requires latitude and longitude for location data, utilize [this predefined list of locations](https://gist.github.com/ofou/df09a6834a8421b4f376c875194915c9) as your hardcoded source.
+The frontend interacts with our fastAPI backend to fetch weather data and manage locations. I could have used axios but nuxt provides sufficient in built functions like useFetch, useLazyAsyncData and many more. These functions allowed me to simply implement loading screen and refresh the data after some change.
 
-## Evaluation Criteria
+## Backend
 
-Your submission will be assessed based on:
+The backend of the Weather Dashboard is responsible for handling API requests, interacting with the database, and fetching weather data from external APIs.
 
-- **Functionality:** Adherence to the requirements and overall functionality of the application.
-- **Code Quality:** Organization, readability, and documentation of code.
-- **UI/UX Design:** The usability and aesthetic appeal of the application interface.
-- **Innovation and Creativity:** Any additional features or enhancements that improve the app's functionality or user experience.
+### Endpoints
 
-## Submission Guidelines
+The backend provides the following endpoints:
 
-- Your completed project should be submitted as a ZIP file.
-- Include a Loom video walking through the UI.
+- `/locations/`: Manages locations, allowing users to retrieve location with weather data, and add locations.
+- `/locations/{location_id}`: Delete location endpoint
+- `/search/{location}`: Searches for locations based on the provided query string.
+- `/forecast/{location_id}`: Retrieves a detailed 7-day weather forecast for a specified location. I still created this api endpoint to follow the guidlines but after some testing I discovered that fetching only daily forecast from open-meteo takes exaclty the same time as fetching daily and current data together. So, I think that fetching the data with daily and current weather together, while loading the dashboard will reduce overall number of requests and loading time.
 
-We look forward to seeing your innovative solution. Best of luck!
+### Database Integration
+
+The backend integrates with a PostgreSQL database using SQLAlchemy ORM. It defines a `Location` model to store location information without associated weather data because weather data is dynamic and it changes frequently.
+
+### External API Integration
+
+To fetch weather data, the backend makes requests to the OpenMeteo API based on latitude and longitude coordinates obtained from the database.
+
+## Functionality
+
+The Weather Dashboard application offers the following functionality:
+
+- Displaying current weather conditions and detailed forecasts for selected locations.
+- Adding new locations and removing existing ones.
+- Providing search functionality to find locations based on user input.
+
+## Usage
+
+To run the Weather Dashboard application locally:
+
+1. Start the backend server by running `main.py` using UVicorn.
+2. Start the frontend development server by running `npm run dev`.
+3. Access the application in your web browser at the specified URL.
+
+## Possible Enhancements
+
+Some possible enhancements to the Weather Dashboard application include:
+
+- Implementing user authentication to allow users to save their preferred locations if we do not want user to go through authentication proccess we can generate unique identifier using time and random values and we can plant it in the user cookies or localstorage, and in the databse modal just add one more field.
+- Enhancing the user interface with additional features such as charts, graphs and hourly weather data in the sidebar.
+
+## My Proposed Solution
+
+Instead of fetching forecast data using the `/forecast/{location_id}` API endpoint, I propose fetching all weather data when the website is loaded and passing it as a prop to the necessary components. This approach can improve performance by reducing the number of API requests and providing faster access to weather information for the user.
+
+## challenges
+
+Nuxt is not as popular as other frameworks, thus there are not many tutorials in the web, so debugging was a bit challenging but I managed to resolve all the issues by myslef.
+Customizing NuxtUI components was challenging part as well but their documentation helped me a lot.
+
+## Contributors
+
+The Weather Dashboard application was developed by Grigoli Patsatsia for coding challenge at DataCose
