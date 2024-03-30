@@ -110,4 +110,4 @@ Customizing NuxtUI components was challenging part as well but their documentati
 
 ## Contributors
 
-The Weather Dashboard application was developed by Grigoli Patsatsia for coding challenge at DataCose
+The Weather Dashboard application was developed by Grigoli Patsatsia
